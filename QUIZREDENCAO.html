@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O quanto o término realmente te destruiu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(220, 38, 38, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(185, 28, 28, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(239, 68, 68, 0.08) 0%, transparent 50%);
+            animation: bgPulse 15s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        @keyframes bgPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .particle {
+            position: fixed;
+            width: 2px;
+            height: 2px;
+            background: rgba(220, 38, 38, 0.4);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1;
+            animation: float linear infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(100px);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            max-width: 750px;
+            width: 100%;
+            background: rgba(15, 15, 15, 0.85);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 50px;
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(255, 255, 255, 0.05),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            position: relative;
+            z-index: 10;
+            border: 1px solid rgba(220, 38, 38, 0.1);
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, 
+                transparent,
+                rgba(220, 38, 38, 0.5) 50%,
+                transparent);
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
+        }
+
+        .intro-screen, .question-screen, .result-screen {
+            display: none;
+        }
+
+        .active {
+            display: block;
+            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes fadeInUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(30px);
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0);
+            }
+        }
+
+        .hero-image {
+            width: 100%;
+            max-width: 600px;
+            height: auto;
+            border-radius: 16px;
+            margin: 0 auto 32px;
+            display: block;
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(220, 38, 38, 0.2);
+            border: 1px solid rgba(220, 38, 38, 0.15);
+            object-fit: cover;
+        }
+
+        .headline {
+            font-size: 24px;
+            line-height: 1.4;
+            margin-bottom: 16px;
+            color: #f5f5f5;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+
+        .subhead {
+            font-size: 17px;
+            line-height: 1.7;
+            margin-bottom: 36px;
+            color: #a1a1aa;
+            font-weight: 400;
+        }
+
+        .start-btn, .option-btn {
+            width: 100%;
+            padding: 20px 32px;
+            font-size: 18px;
+            font-weight: 700;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            margin-bottom: 16px;
+            font-family: 'Inter', sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            color: white;
+            box-shadow: 
+                0 10px 30px rgba(220, 38, 38, 0.4),
+                0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 10px;
+        }
+
+        .start-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .start-btn:hover::before {
+            left: 100%;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 
+                0 15px 40px rgba(220, 38, 38, 0.6),
+                0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+        }
+
+        .start-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .question-number {
+            font-size: 13px;
+            color: #dc2626;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .question-number::before {
+            content: '';
+            width: 4px;
+            height: 4px;
+            background: #dc2626;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(220, 38, 38, 0.8);
+        }
+
+        .question-text {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 36px;
+            line-height: 1.3;
+            letter-spacing: -0.02em;
+            color: #fafafa;
+        }
+
+        .option-btn {
+            background: rgba(255, 255, 255, 0.03);
+            color: #e5e5e5;
+            border: 1.5px solid rgba(255, 255, 255, 0.08);
+            text-align: left;
+            font-size: 17px;
+            padding: 22px 26px;
+            font-weight: 500;
+            letter-spacing: -0.01em;
+            position: relative;
+        }
+
+        .option-btn::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: linear-gradient(180deg, #dc2626, #991b1b);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .option-btn:hover {
+            background: rgba(220, 38, 38, 0.08);
+            border-color: rgba(220, 38, 38, 0.4);
+            transform: translateX(6px);
+            color: #fff;
+        }
+
+        .option-btn:hover::before {
+            opacity: 1;
+        }
+
+        .option-btn:active {
+            transform: translateX(3px);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            margin-bottom: 32px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: progressShimmer 2s infinite;
+        }
+
+        @keyframes progressShimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #dc2626, #ef4444, #dc2626);
+            background-size: 200% 100%;
+            transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(220, 38, 38, 0.6);
+            animation: gradientSlide 3s ease infinite;
+            position: relative;
+        }
+
+        @keyframes gradientSlide {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .result-screen h2 {
+            font-size: 38px;
+            background: linear-gradient(135deg, #ff4757, #dc2626, #991b1b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 32px;
+            font-weight: 900;
+            letter-spacing: -0.02em;
+            text-align: center;
+            padding: 32px 20px;
+            border: 2px solid rgba(220, 38, 38, 0.3);
+            border-radius: 16px;
+            background-color: rgba(220, 38, 38, 0.05);
+            box-shadow: 
+                0 10px 40px rgba(220, 38, 38, 0.2),
+                inset 0 0 60px rgba(220, 38, 38, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-screen h2::before {
+            content: '⚔️';
+            display: block;
+            font-size: 48px;
+            margin-bottom: 16px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .result-screen h2::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: resultShimmer 3s infinite;
+        }
+
+        @keyframes resultShimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .result-text {
+            font-size: 18px;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            color: #e5e5e7;
+            font-weight: 400;
+            letter-spacing: -0.01em;
+        }
+
+        .result-text strong {
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .result-highlight {
+            background: linear-gradient(135deg, rgba(220, 38, 38, 0.1), rgba(153, 27, 27, 0.15));
+            border-left: 4px solid #dc2626;
+            padding: 28px;
+            margin: 28px 0;
+            border-radius: 12px;
+            position: relative;
+            box-shadow: 0 8px 30px rgba(220, 38, 38, 0.15);
+            border: 1px solid rgba(220, 38, 38, 0.2);
+        }
+
+        .result-highlight::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(220, 38, 38, 0.05), transparent);
+            border-radius: 12px;
+            pointer-events: none;
+        }
+
+        .cta-btn {
+            width: 100%;
+            padding: 24px 40px;
+            font-size: 20px;
+            font-weight: 800;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            margin-top: 24px;
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+            color: white;
+            box-shadow: 
+                0 12px 35px rgba(22, 163, 74, 0.4),
+                0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .cta-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+            transition: left 0.6s;
+        }
+
+        .cta-btn:hover::before {
+            left: 100%;
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 
+                0 18px 50px rgba(22, 163, 74, 0.6),
+                0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+        }
+
+        .cta-btn:active {
+            transform: translateY(-2px);
+        }
+
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(220, 38, 38, 0.3), transparent);
+            margin: 32px 0;
+        }
+
+        .icon-sword::before {
+            content: '⚔️';
+            font-size: 28px;
+            margin-right: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 40px 30px;
+                border-radius: 20px;
+            }
+
+            .headline {
+                font-size: 21px;
+            }
+
+            .subhead {
+                font-size: 16px;
+            }
+
+            .question-text {
+                font-size: 24px;
+            }
+
+            .option-btn {
+                font-size: 16px;
+                padding: 20px 22px;
+            }
+
+            .result-screen h2 {
+                font-size: 26px;
+            }
+
+            .result-text {
+                font-size: 17px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 32px 24px;
+            }
+
+            .headline {
+                font-size: 19px;
+            }
+
+            .question-text {
+                font-size: 21px;
+            }
+
+            .cta-btn {
+                font-size: 18px;
+                padding: 20px 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <script>
+        for(let i = 0; i < 15; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDuration = (Math.random() * 15 + 10) + 's';
+            particle.style.animationDelay = Math.random() * 5 + 's';
+            document.body.appendChild(particle);
+        }
+    </script>
+
+    <div class="container">
+        <div class="intro-screen active" id="intro">
+            <img src="https://i.imgur.com/hpyjnDK.jpeg" alt="O quanto o término realmente te destruiu" class="hero-image">
+            
+            <p class="headline">Você acha que está se curando… mas talvez só esteja se distraindo.<br>Descubra em qual nível de reconstrução emocional você realmente está.</p>
+            
+            <p class="subhead">De 2 a 3 minutos. Respostas sinceras = clareza real.<br>
+            Esse diagnóstico vai te mostrar se você está preso na dor — ou se está nascendo um novo homem aí dentro.</p>
+            <button class="start-btn" onclick="startQuiz()">Começar o Quiz</button>
+        </div>
+
+        <div class="question-screen" id="questions">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress"></div>
+            </div>
+            <div class="question-number" id="questionNumber">Pergunta 1 de 7</div>
+            <div class="question-text" id="questionText"></div>
+            <div id="options"></div>
+        </div>
+
+        <div class="result-screen" id="result">
+            <h2 class="icon-sword">Resultado: Ciclo da Dor Silenciosa</h2>
+            
+            <p class="result-text">Essa fase é brutal, eu sei.</p>
+            
+            <p class="result-text">É quando você segue a vida por fora,<br>mas por dentro luta pra não desmoronar.</p>
+            
+            <p class="result-text">Ninguém percebe.<br>Mas você sente tudo.</p>
+            
+            <p class="result-text">E isso não te faz fraco. Isso te prova que ainda existe um homem aí dentro pedindo pra despertar.</p>
+            
+            <div class="divider"></div>
+            
+            <p class="result-text"><strong>A verdade é simples:</strong></p>
+            
+            <p class="result-text">Não é o que aconteceu que te define —<br>é o que você decide fazer a partir de agora.</p>
+            
+            <p class="result-text">Você não precisa esquecer. Precisa se reconectar com quem você realmente é.</p>
+            
+            <p class="result-text">E talvez, no fundo, você já saiba:</p>
+            
+            <div class="result-highlight">
+                <p class="result-text" style="margin-bottom: 0;"><strong>Essa dor não veio pra te destruir.<br>Ela veio pra te forjar.</strong></p>
+            </div>
+            
+            <p class="result-text">Só existe duas opções agora:</p>
+            
+            <p class="result-text">Se perder no silêncio,<br>ou levantar e renascer com propósito.</p>
+            
+            <p class="result-text">Se você escolhe a segunda…</p>
+
+            <div class="divider"></div>
+
+            <p class="result-text">⚔️ Então é hora de entrar pro <strong>Redenção do Homem</strong> —<br>a jornada onde homens quebrados estão se tornando homens fortes, conscientes, espirituais e imbatíveis.</p>
+            
+            <div class="result-highlight">
+                <p class="result-text" style="margin-bottom: 0;"><strong>Isso não é "curso". É renascimento.</strong></p>
+            </div>
+
+            <p class="result-text">Se algo dentro de você sentiu esse chamado…<br>então esse é o seu momento.</p>
+            
+            <p class="result-text">Cada dia que passa é uma oportunidade que você deixa de renascer e mudar completamente sua História.</p>
+
+            <a href="https://pay.cakto.com.br/3fkweh2_519883" target="_blank" style="text-decoration: none;">
+                <button class="cta-btn">👇🏻 Entre agora! Transforme essa dor em força e se torne um Protagonista</button>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "Quando você lembra dela, o que sente primeiro?",
+                options: [
+                    "Raiva e ressentimento",
+                    "Vergonha e arrependimento",
+                    "Saudade e vazio",
+                    "Paz + aprendizado + fé no futuro",
+                    "Nada (eu desliguei meus sentimentos)"
+                ]
+            },
+            {
+                question: "Hoje você busca mais:",
+                options: [
+                    "Distrair a mente (Festa, Bebida, Drogas)",
+                    "Espionar, stalkear, tentar entender",
+                    "Se provar para ela / ver se ela nota",
+                    "Melhorar por você, não por ela",
+                    "Conexão com Deus e propósito para recomeçar"
+                ]
+            },
+            {
+                question: "Como está sua rotina pós-término?",
+                options: [
+                    "Bagunçada / sem energia",
+                    "Oscilando entre motivação e queda",
+                    "Indo pro automático / sobrevivendo",
+                    "Disciplina, foco e autocrescimento",
+                    "Transformação espiritual + emocional real"
+                ]
+            },
+            {
+                question: "O que você sente quando pensa no futuro?",
+                options: [
+                    "Medo de nunca superar",
+                    "Medo de ficar sozinho",
+                    "Confiança parcial",
+                    "Excitação pelo homem que estou virando",
+                    "Sinto que Deus está me moldando para algo maior"
+                ]
+            },
+            {
+                question: "O que você mais teme admitir?",
+                options: [
+                    "Eu ainda queria ela",
+                    "Eu estraguei tudo",
+                    "Eu perdi meu valor",
+                    "Eu ainda não sei quem sou sem ela",
+                    "Essa dor está me forjando"
+                ]
+            },
+            {
+                question: "Quem você está tentando se tornar agora?",
+                options: [
+                    "O cara que ela vai se arrepender de perder",
+                    "O cara que ninguém pisa",
+                    "O cara que não sente nada",
+                    "Um homem mais forte, sábio e disciplinado",
+                    "Um homem guiado pelo propósito e por Deus"
+                ]
+            },
+            {
+                question: "Seja honesto: você está tentando superar… ou renascer?",
+                options: [
+                    "Só superar",
+                    "Só esquecer",
+                    "Só fingindo força",
+                    "Me reinventando de verdade",
+                    "Matando meu velho eu para nascer um novo homem"
+                ]
+            }
+        ];
+
+        let currentQuestion = 0;
+
+        function startQuiz() {
+            document.getElementById('intro').classList.remove('active');
+            setTimeout(() => {
+                document.getElementById('questions').classList.add('active');
+                showQuestion();
+            }, 100);
+        }
+
+        function showQuestion() {
+            const questionData = questions[currentQuestion];
+            document.getElementById('questionNumber').textContent = `Pergunta ${currentQuestion + 1} de 7`;
+            document.getElementById('questionText').textContent = questionData.question;
+            
+            const optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = '';
+            
+            questionData.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.className = 'option-btn';
+                button.textContent = option;
+                button.onclick = () => selectOption(index);
+                optionsContainer.appendChild(button);
+            });
+
+            updateProgress();
+        }
+
+        function selectOption(optionIndex) {
+            currentQuestion++;
+            
+            if (currentQuestion < questions.length) {
+                document.getElementById('questions').classList.remove('active');
+                setTimeout(() => {
+                    document.getElementById('questions').classList.add('active');
+                    showQuestion();
+                }, 400);
+            } else {
+                showResult();
+            }
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progress').style.width = progress + '%';
+        }
+
+        function showResult() {
+            document.getElementById('questions').classList.remove('active');
+            setTimeout(() => {
+                document.getElementById('result').classList.add('active');
+            }, 400);
+        }
+    </script>
+</body>
+</html>
